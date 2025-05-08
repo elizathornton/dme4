@@ -8,42 +8,63 @@
 </head>
 <body>
 
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <h2>Order New DME</h2>
-    <button style="
-      padding: 12px 20px;
-      font-size: 16px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    ">
-      Patient has DME not on this list
-    </button>
+  <div id="catalogModal" class="modal-overlay" style="display: none;"></div>
+
+  <!-- Upper Section -->
+  <div class="upper-section">
+    <!-- Left Half -->
+    <div class="left-half">
+      <h2>Order New DME</h2>
+      <div class="search-upload">
+        <input type="text" id="dmeSearch" placeholder="Search for DME..." />
+        <button id="browseButton" class="browse-label">Browse</button>
+
+        <!-- This is the placeholder container that will hold the menu -->
+        <div id="nestedMenuContainer" class="nested-menu-container" style="display: none;"></div>
+
+
+
+
+
+
+      </div>
+    </div>
+
+    <!-- Right Half -->
+    <div class="right-half">
+      <button class="red-action-button">
+        Patient has DME not on this list
+      </button>
+    </div>
   </div>
 
-  <input type="text" id="dmeSearch" placeholder="Search for DME..." style="padding: 8px; margin-right: 10px; border-radius: 4px; border: none; width: 200px;" />
-  <label style="background-color: #007bff; color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
-    Browse
-    <input type="file" style="display: none;" id="fileUpload" />
-  </label>
-
-  <h2 style="margin-top: 20px;">DME 6 ***</h2>
+  <h2 style="margin-top: 20px;">DME  9***</h2>
   <table id="dmeTable">
     <thead>
       <tr>
-        <th>Name</th>
+        <th></th>
+        <th>DME Name</th>
         <th>Status</th>
-        <th>Stop</th>
+        <th></th>
         <th>Action</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+      <!-- Table rows go here -->
+    </tbody>
   </table>
 
   <div id="infoBox" class="info-box"></div>
 
-  <script src="script.js"></script>
+ <!-- Pop-up Box with Close Button -->
+<div id="popUpBox">
+  <button id="closeButton" class="close-btn">Close</button>
+  <p id="popUpMessage"></p>
+</div>
+
+
+  
+  <script type="module" src="script.js"></script>
+
 </body>
 </html>

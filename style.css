@@ -1,4 +1,3 @@
-
 body {
     background-color: #1a1a1a;
     color: white;
@@ -78,4 +77,294 @@ body {
     display: none;
     z-index: 10;
   }
+
   
+  /* Upper section container */
+  .upper-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  /* Left half styling */
+  .left-half {
+    flex: 1;
+    border: 2px solid #555; /* Border for the left half */
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #2a2a2a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Make "Order New DME" larger */
+  .left-half h2 {
+    font-size: 2rem; /* Adjust the size as needed */
+    font-weight: bold; /* Optional: Make it bold */
+    margin-bottom: 10px; /* Optional: Add spacing below */
+  }
+  
+  /* Right half styling */
+  .right-half {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Adjust the red button styling */
+  .red-action-button {
+    padding: 16px 24px;
+    font-size: 18px;
+    background-color: #dc3545; /* Bootstrap red */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  /* Center the red button under the header */
+  .center-button {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+  }
+  
+  /* Layout for search + browse button */
+  .search-upload {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  
+  /* Style the search input */
+  #dmeSearch {
+    padding: 10px;
+    border-radius: 4px;
+    border: none;
+    width: 220px;
+  }
+  
+  /* Style the "Browse" label */
+  .browse-label {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  /* Center-align the "Action" column */
+  #dmeTable th:nth-child(3), 
+  #dmeTable td:nth-child(3) {
+    text-align: center;
+  }
+
+  /* clickable info icon */
+  .info-icon {
+    color: #007bff; /* Bootstrap blue */
+    font-size: 18px;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+  
+  .info-icon:hover {
+    opacity: 0.8;
+  }
+  
+  /* Info box styling */
+  #popUpBox {
+    position: fixed;                /* Keeps it in place when scrolling */
+    top: 50%;                       /* Centers vertically */
+    left: 50%;                      /* Centers horizontally */
+    transform: translate(-50%, -50%); /* Adjusts positioning for exact center */
+    background-color: rgba(0, 0, 0, 1); /* Full opacity background (1 instead of 0.8) */
+    color: white;                   /* White text */
+    padding: 30px;                  /* Increased padding for more space around the text */
+    border-radius: 10px;            /* Rounded corners */
+    width: 70%;                     /* Set a width for the box */
+    max-width: 600px;               /* Maximum width */
+    text-align: center;             /* Center the text */
+    font-size: 18px;                /* Larger text for better readability */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Slight shadow for the box */
+    display: none;                  /* Hidden by default */
+    z-index: 1000;                  /* Makes sure it’s on top of other content */
+  }
+  
+  /* Close Button Styling */
+  .close-btn {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .close-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  
+/* Action button styling */
+/* Style for the green button */
+.green-btn {
+  background-color: green;
+  color: white;
+  padding: 8px 15px; /* Adjusted padding for smaller size */
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0 5px; /* Adds spacing between buttons */
+}
+
+/* Style for the yellow button */
+.yellow-btn {
+  background-color: yellow;
+  color: black;
+  padding: 8px 15px; /* Adjusted padding for smaller size */
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0 5px; /* Adds spacing between buttons */
+}
+
+/* Style for the purple button */
+.purple-btn {
+  background-color: purple;
+  color: white;
+  padding: 8px 15px; /* Adjusted padding for smaller size */
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0 5px; /* Adds spacing between buttons */
+}
+
+/* Style for the red button */
+.red-btn {
+  background-color: red;
+  color: white;
+  padding: 8px 15px; /* Adjusted padding for smaller size */
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0 5px; /* Adds spacing between buttons */
+}
+
+/* Optional: Add hover effect for all buttons */
+button:hover {
+  opacity: 0.8;
+}
+
+.nested-menu-container {
+  position: absolute;
+  top: 150px; /* adjust as needed */
+  left: 20px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 2000;
+}
+
+.nested-menu ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.nested-menu ul ul {
+  margin-left: 20px;
+  margin-top: 5px;
+}
+
+.nested-menu li {
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+.nested-menu li:hover {
+  text-decoration: underline;
+}
+
+
+#catalogModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.catalog-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.catalog-container {
+  background-color: #1e2433;
+  border-radius: 10px;
+  padding: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
+  width: 90%;
+  max-width: 700px;
+  color: white;
+}
+
+.catalog-title {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.catalog-category {
+  margin-bottom: 12px;
+}
+
+.category-header {
+  cursor: pointer;
+  padding: 10px;
+  background-color: #2a3040;
+  border-bottom: 1px solid #3a3f4b;
+}
+
+.subcategory-list {
+  padding-left: 16px;
+}
+
+.subcategory-header {
+  cursor: pointer;
+  padding: 8px;
+  background-color: #1a1f2e;
+  border-bottom: 1px solid #2d3446;
+}
+
+.dme-item-list {
+  padding-left: 16px;
+}
+
+.dme-item {
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #8c8f96;
+}
+
+.dme-item:hover {
+  color: white;
+  background-color: #2a3040;
+}

@@ -1,157 +1,153 @@
-let dmeDetails = [];
-console.log("LINE 1");
+// Import all the classes and functions
+import { loadCSVData } from './dataLoader.js';
+import { DMEItem, Patient, PatientDme, F1845, F7410, F7536 } from './classes.js';
+import { showNestedMenu } from './browseMenu.js';
+import { openCatalogModal } from './dmeCatalogMenu.js';
 
-// Load both CSVs safely
-Promise.all([
-  fetch('DME_list.csv').then(res => res.text()),
-  fetch('data.csv').then(res => res.text())
-]).then(([dmeCSV, dataCSV]) => {
-  dmeDetails = parseCSV(dmeCSV);
-  const rows = parseCSV(dataCSV);
-  populateTable(rows);
+
+let globalDmeCatalog = []; // store DME catalog here
+
+loadCSVData().then(({ dmeCatalog, patientDmeData }) => {
+  globalDmeCatalog = dmeCatalog;
+  populateTable(patientDmeData);
 });
 
-function parseCSV(data) {
-  console.log("Top of parseCSV");
-  const lines = data.trim().split(/\r?\n/);
-  const headers = parseCSVLine(lines[0]).map(h => h.trim());
+document.getElementById('browseButton').addEventListener('click', () => {
+  showNestedMenu(globalDmeCatalog);
+});
 
-  return lines.slice(1)
-    .filter(line => line.trim() !== '')
-    .map(line => {
-      const values = parseCSVLine(line);
-      const row = {};
-      headers.forEach((header, i) => {
-        row[header] = values[i]?.trim() ?? '';
-      });
-      return row;
+
+
+
+function populateTable(patientDmeData) {
+  const tableBody = document.querySelector('#dmeTable tbody');
+  tableBody.innerHTML = ''; // Clear any existing rows
+
+  patientDmeData.forEach(dmeRow => {
+    const row = document.createElement('tr');
+    console.log(dmeRow); // Log the current row for debugging
+
+    //Add info icon
+    const infoCell = document.createElement('td');
+    const infoIcon = document.createElement('span');
+    infoIcon.innerHTML = '&#9432;'; // Unicode info symbol ℹ
+    infoIcon.classList.add('info-icon');
+    infoIcon.title = 'More info about this DME';
+    infoCell.appendChild(infoIcon);
+    row.appendChild(infoCell);
+
+    // Add DME Name cell
+    const nameCell = document.createElement('td');
+    nameCell.textContent = dmeRow['DME'] ; // The first column is the DME name
+    row.appendChild(nameCell);
+
+
+    // Add Status cell
+    const statusCell = createStatusCell(dmeRow['Status'], dmeRow['Stop Date']);
+    row.appendChild(statusCell);
+
+
+    // Add empty <td> for blank column
+    const emptyCell = document.createElement('td');
+    row.appendChild(emptyCell);
+
+    // Add Action cell
+    // Add Action cell with multiple buttons
+    const actionCell = createActionCell(dmeRow);
+    row.appendChild(actionCell);
+
+    tableBody.appendChild(row);
+  });
+}
+
+
+// Add event listener to close the pop-up box when the close button is clicked
+const closeButton = document.getElementById('closeButton');
+closeButton.addEventListener('click', () => {
+  const popUpBox = document.getElementById('popUpBox');
+  popUpBox.style.display = 'none';  // Hide the pop-up box when clicking the close button
+});
+
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const { dmeCatalog } = await loadCSVData();
+
+  const browseLabel = document.querySelector('.browse-label');
+  browseLabel.addEventListener('click', () => {
+    openCatalogModal(dmeCatalog, selected => {
+      console.log('Selected DME:', selected); // handle selection
     });
-}
-
-function parseCSVLine(line) {
-  console.log("Top of parseCSVLine");
-  const result = [];
-  let current = '';
-  let inQuotes = false;
-
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-    const nextChar = line[i + 1];
-
-    if (char === '"' && inQuotes && nextChar === '"') {
-      current += '"';
-      i++; // skip escaped quote
-    } else if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      result.push(current);
-      current = '';
-    } else {
-      current += char;
-    }
-  }
-  result.push(current);
-  return result;
-}
-
-function getColorByStatus(status) {
-  if (status === 'Valid') return 'green';
-  if (status === 'Needs Receipt') return 'red';
-  return 'blue';
-}
-
-function populateTable(dataRows) {
-  const tbody = document.querySelector('#dmeTable tbody');
-  const infoBox = document.getElementById('infoBox');
-
-  dataRows.forEach(row => {
-    const tr = document.createElement('tr');
-
-    // Name cell with status bar and info icon
-    const nameTd = document.createElement('td');
-    const rowDiv = document.createElement('div');
-    rowDiv.className = 'row-container';
-
-    const color = getColorByStatus(row.Status);
-
-    const bar = document.createElement('div');
-    bar.className = 'status-bar';
-    bar.style.backgroundColor = color;
-
-    const infoIcon = document.createElement('div');
-    infoIcon.className = 'info-icon';
-    infoIcon.style.backgroundColor = color;
-    infoIcon.textContent = 'i';
-    infoIcon.onclick = (e) => {
-      e.stopPropagation();
-      const detail = dmeDetails.find(d => d['Item'] === row.Name);
-      if (detail) {
-        infoBox.style.display = 'block';
-        infoBox.style.top = `${e.pageY + 10}px`;
-        infoBox.style.left = `${e.pageX + 10}px`;
-        infoBox.innerHTML = `<strong>${row.Name}</strong><br><small>${detail['Subcategory 1'] || ''}, ${detail['Subcategory 2'] || ''}</small><br><br>` +
-          `<div style="font-size: 13px;">${detail.Description || ''}<br><br>
-            <strong>Brand:</strong> ${detail.Brand || ''}<br>
-            <strong>Image:</strong> ${detail.Image || ''}<br>
-            <strong>Indications:</strong> ${detail['Indications'] || ''}<br>
-            <strong>Clinical Actions:</strong> ${detail['Clinical Actions'] || ''}<br>
-            <strong>Workflow Actions:</strong> ${detail['Workflow Actions'] || ''}</div>`;
-      } else {
-        infoBox.style.display = 'block';
-        infoBox.style.top = `${e.pageY + 10}px`;
-        infoBox.style.left = `${e.pageX + 10}px`;
-        infoBox.innerHTML = `<strong>${row.Name}</strong><br><small>No details found.</small>`;
-      }
-    };
-
-    rowDiv.appendChild(infoIcon);
-    rowDiv.appendChild(bar);
-
-    const nameContent = document.createElement('div');
-    nameContent.innerHTML = `<div>${row.Name}</div><div style="font-size: 13px; color: #aaa;">Loading subcategories...</div>`;
-    rowDiv.appendChild(nameContent);
-
-    nameTd.appendChild(rowDiv);
-    tr.appendChild(nameTd);
-
-    // Status
-    const statusTd = document.createElement('td');
-    statusTd.textContent = row.Status;
-    statusTd.style.color = color; 
-    tr.appendChild(statusTd);
-
-    // Stop
-    const stopTd = document.createElement('td');
-    stopTd.textContent = row.Stop;
-    tr.appendChild(stopTd);
-
-    // Actions
-    const actionTd = document.createElement('td');
-    actionTd.className = 'action-buttons';
-
-    ['DC', 'Patient Has', 'Does Not Have', 'Damaged'].forEach(action => {
-      const btn = document.createElement('button');
-      btn.textContent = action;
-      if (action === 'DC') btn.classList.add('dc');
-      else if (action === 'Patient Has') btn.classList.add('has');
-      else if (action === 'Does Not Have') btn.classList.add('lost');
-      else if (action === 'Damaged') btn.classList.add('damaged');
-      actionTd.appendChild(btn);
-    });
-
-    tr.appendChild(actionTd);
-    tbody.appendChild(tr);
-
-    // Load subcategories into 2nd line
-    const detail = dmeDetails.find(d => d['Item'] === row.Name);
-    if (detail) {
-      nameContent.children[1].textContent = `${detail['Subcategory 1'] || ''}, ${detail['Subcategory 2'] || ''}`;
-    }
   });
 
-  document.body.onclick = (e) => {
-    if (!e.target.classList.contains('info-icon')) {
-      infoBox.style.display = 'none';
-    }
-  };
+  // ... rest of your table population logic
+});
+
+
+
+
+// This function shows an info box with a message
+function showInfoBox(message) {
+  const popUpBox = document.getElementById('popUpBox');
+  const popUpMessage = document.getElementById('popUpMessage');
+  popUpMessage.textContent = message;  // Set the message in the pop-up
+  popUpBox.style.display = 'block';  // Make the pop-up visible
 }
+
+
+// This function creates a status cell with color coding
+function createStatusCell(status, stopDateStr) {
+  const statusCell = document.createElement('td');
+  const statusLower = status?.toLowerCase();
+  const today = new Date();
+  let isGreen = false;
+
+  if (statusLower === 'permanent') {
+    isGreen = true;
+  } else if (statusLower === 'temporary' && stopDateStr) {
+    const stopDate = new Date(stopDateStr);
+    isGreen = stopDate > today;
+  }
+
+  statusCell.style.color = isGreen ? 'green' : 'red';
+  statusCell.textContent = `${status} ${stopDateStr}`.trim();
+  return statusCell;
+}
+
+// This function creates an action cell with buttons
+function createActionCell(dmeRow) {
+  const actionCell = document.createElement('td');
+  const actions = [
+    {
+      text: 'Has DME',
+      colorClass: 'green-btn',
+      message: 'Thank you for confirming that the patient has the DME in their possession.'
+    },
+    {
+      text: 'No DME',
+      colorClass: 'yellow-btn',
+      message: 'DME has been lost, stolen, destroyed, or confiscated. The patient must obtain a receipt from custody stating what happened to the DME. Patient must return to clinic with the receipt and will be issued replacement DME.'
+    },
+    {
+      text: 'Damaged',
+      colorClass: 'purple-btn',
+      message: 'Patient must submit the damaged DME to clinic and receive replacement DME.'
+    },
+    {
+      text: 'DC',
+      colorClass: 'red-btn',
+      message: 'The DME order has been discontinued.'
+    }
+  ];
+
+  actions.forEach(action => {
+    const btn = document.createElement('button');
+    btn.textContent = action.text;
+    btn.classList.add('action-btn', action.colorClass);
+    btn.onclick = () => showInfoBox(action.message);
+    actionCell.appendChild(btn);
+  });
+
+  return actionCell;
+}
+
